@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: build docker Image
+      run: docker build -t nospof/kanikoaws:${{ github.sha }} .
+    - name: docker tag
+      run: docker tag  nospof/kanikoaws:${{ github.sha }} nospof/kanikoaws:latest
+    - name: docker login
+      run : docker login -u ${{ secrets.DOCKERUSERNAME }} -p ${{ secrets.DOCKERPASSWORD }}
+    - name: docker push
+      run: docker push nospof/kanikoaws:${{ github.sha }}
+    - name: docker push latest
+      run: docker push nospof/kanikoaws:latest
